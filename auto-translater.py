@@ -185,6 +185,11 @@ def translate_front_matter(front_matter, lang):
                     processed_value = recursive_translate(v, lang)
                 translated_dict[k] = processed_value
             return translated_dict
+        elif isinstance(value, list): #处理数组
+            translated_list = []
+            for item in value:
+                translated_list.append(recursive_translate(item, lang))
+            return translated_list
         else:
             return value
 
