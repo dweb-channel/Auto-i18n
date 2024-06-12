@@ -175,16 +175,20 @@ def translate_text(text, lang, type):
 
 # Front Matter 处理规则
 def translate_front_matter(front_matter, lang):
-    translated_front_matter = {}
-    for key, value in front_matter.items():
-        if key in front_matter_translation_rules:
-            processed_value = front_matter_translation_rules[key](value, lang)
+    def recursive_translate(value, lang):
+        if isinstance(value, dict):
+            translated_dict = {}
+            for k, v in value.items():
+                if k in front_matter_translation_rules:
+                    processed_value = front_matter_translation_rules[k](v, lang)
+                else:
+                    processed_value = recursive_translate(v, lang)
+                translated_dict[k] = processed_value
+            return translated_dict
         else:
-            # 如果在规则列表内，则不做任何翻译或替换操作
-            processed_value = value
-        translated_front_matter[key] = processed_value
-        # print(key, ":", processed_value)
-    return translated_front_matter
+            return value
+
+    return recursive_translate(front_matter, lang)
 
 # 定义文章拆分函数
 def split_text(text, max_length):
